@@ -48,13 +48,14 @@ class Passport {
         passport.use(
             new JwtStrategy(
                 {
-                    jwtFromRequest: ExtractJwt.fromHeader('authorization'),
+                    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
                     secretOrKey: EXPRESS.ACCESS_TOKEN_SECRET,
                 },
                 (payload: any, done: Function) => {
                     try {
-                        done(null, payload.user);
+                        done(null, payload);
                     } catch (error) {
+                        console.log('error', error);
                         done(error, false);
                     }
                 },

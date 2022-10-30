@@ -12,6 +12,12 @@ class Auth {
         return token;
     };
 
+    public verifyJWTToken = (token: string) => {
+        const { ACCESS_TOKEN_SECRET } = Locals.EXPRESS;
+        const payoad = jwt.verify(token, ACCESS_TOKEN_SECRET);
+        return payoad;
+    };
+
     public randomSalt = () => {
         return crypto.randomBytes(16).toString('hex');
     };
