@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import Locals from '../configs/Locals';
 import Logger from '../logger/logger';
 
-export class Database {
+export class MongoDB {
     public static init(): any {
         /** Load ENV  */
         const { MONGO_URI } = Locals.DATABASE;

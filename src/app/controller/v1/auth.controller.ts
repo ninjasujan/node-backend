@@ -1,25 +1,56 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import ValidatioError from '../../exceptions/ValidationError';
+import UserModel from 'app/models/user.model';
 import authService from '../../service/auth.service';
 
-class Login {
-    public loginHandler = async (
-        req: Request,
-        res: Response,
+class Auth {
+    public googleCallback = (
+        request: Request,
+        ressponse: Response,
         next: NextFunction,
     ) => {
         try {
-            const { email } = req.body;
-            const errors = validationResult(req);
+            const token = authService.generateJWTToken({
+                _id: request.user._id,
+            });
+            ressponse.status(200).json({
+                status: 'success',
+                statusCode: 200,
+                message: 'Google Login successful',
+                data: {
+                    accessToken: token,
+                },
+            });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    public passwordSignup = async (
+        request: Request,
+        response: Response,
+        next: NextFunction,
+    ) => {
+        try {
+            const errors = validationResult(request);
             if (!errors.isEmpty()) {
                 throw new ValidatioError(errors);
             }
-            const response = await authService.login(email);
-            res.status(200).json({
-                success: true,
-                message: 'data fetched successfully',
-                data: response,
+            const { name, email, password } = request.body;
+            let user = await UserModel.findOne({ email });
+            if (!user) {
+                user = new UserModel({
+                    email,
+                    name,
+                });
+                user.hashPassword(password);
+                await user.save();
+            }
+            response.status(200).json({
+                status: 'success',
+                statusCode: 200,
+                message: 'User registration success',
             });
         } catch (error) {
             next(error);
@@ -27,4 +58,4 @@ class Login {
     };
 }
 
-export default new Login();
+export default new Auth();

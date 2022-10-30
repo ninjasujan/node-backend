@@ -1,5 +1,6 @@
-import mongoose from '../../providers/Database';
-import { Platform, SignUpMethod } from '../../constants/user.constants';
+import mongoose, { Model } from 'mongoose';
+import { Platform, LoginMethod } from '../../constants/user.constants';
+import authService from 'app/service/auth.service';
 
 export interface ILocation {
     type: string;
@@ -14,55 +15,76 @@ enum Gender {
 }
 
 export interface IUser {
-    name: string;
-    emai: string;
-    mobileNumber: string;
-    age: number;
-    platform: string;
-    location: [ILocation];
-    gender: GenderType;
-    loginMethod: string;
+    name?: string;
+    email: string;
+    passwordHash?: string;
+    passwordSalt?: string;
+    platform?: string;
+    location?: [ILocation];
+    gender?: GenderType;
+    loginMethod?: string;
 }
 
-export interface IUserModel extends IUser, mongoose.Document {}
+interface IUserMethods {
+    hashPassword(password: string): void;
+    checkPassword(): boolean;
+}
 
-export const UserSchema = new mongoose.Schema({
+type IUserModel = Model<IUser, {}, IUserMethods>;
+
+export const UserSchema = new mongoose.Schema<IUser, IUserModel, IUserMethods>({
     name: {
         type: String,
-        required: true,
     },
-    emai: {
+    email: {
         type: String,
         required: true,
+        unique: true,
     },
-    mobileNumber: {
+    passwordHash: {
         type: String,
-        required: true,
     },
-    age: {
-        type: Number,
-        min: 13,
-        max: 70,
+    passwordSalt: {
+        type: String,
     },
     platform: {
         type: String,
         enum: Object.values(Platform),
+        default: Platform.ANDROID,
     },
     location: {
         type: {
             type: String,
             enum: ['point'],
         },
-        coordinates: [mongoose.Schema.Types.Decimal128],
+        coordinates: [Number],
     },
     gender: {
         type: String,
-        enum: [Object.values(Gender)],
+        enum: Object.values(Gender),
     },
     loginMethod: {
         type: String,
-        enum: Object.values(SignUpMethod),
+        enum: Object.values(LoginMethod),
     },
 });
 
-export default mongoose.model<IUserModel>('User', UserSchema);
+/** Mongoose Instance method helps to hash password */
+UserSchema.method('hashPassword', function hashPassword(password: string) {
+    this.passwordSalt = authService.randomSalt();
+    this.passwordHash = authService.encryptPassword(
+        password,
+        this.passwordSalt,
+    );
+});
+
+/** Mongoose instace method to verify the password */
+UserSchema.method('checkPassword', function checkPassword(password: string) {
+    const passwordHash = authService.encryptPassword(
+        password,
+        this.passwordSalt,
+    );
+    return this.passwordHash === passwordHash;
+});
+
+export default mongoose.model<IUser, IUserModel>('User', UserSchema);

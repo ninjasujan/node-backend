@@ -1,4 +1,4 @@
-import { Database } from '@providers/Database';
+import { MongoDB } from '@providers/Database';
 import Express from '@providers/Express';
 
 class App {
@@ -7,7 +7,7 @@ class App {
         Express.init();
 
         /** Connect  MongoDB database */
-        Database.init();
+        MongoDB.init();
     }
 }
 

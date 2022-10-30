@@ -1,14 +1,20 @@
 import express, { Router } from 'express';
-import { body } from 'express-validator';
-
+import passport from 'passport';
 import authController from '@controller/v1/auth.controller';
 
 const router: Router = express.Router();
 
-router.post(
-    '/login',
-    [body('email', 'Invalid email.!').notEmpty().isEmail()],
-    authController.loginHandler,
+/** Route - Handles Google OAuth 2 Login */
+router.get(
+    '/google-login',
+    passport.authenticate('google', { scope: ['email', 'profile'] }),
+);
+
+/** Route - Redirected from callback URL after Google Login */
+router.get(
+    '/callback',
+    passport.authenticate('google', { session: true }),
+    authController.googleCallback,
 );
 
 export default router;
