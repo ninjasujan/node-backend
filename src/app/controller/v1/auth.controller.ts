@@ -12,7 +12,6 @@ class Auth {
         next: NextFunction,
     ) => {
         try {
-            console.log('[Google Auth Status]', request.isAuthenticated());
             const token = authService.generateJWTToken({
                 _id: request.user._id,
             });

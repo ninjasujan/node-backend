@@ -6,4 +6,6 @@ const router: Router = express.Router();
 /** Route - Handles Google OAuth 2 Login */
 router.post('/create-direcroty', fileCntroller.createDirectory);
 
+router.delete('/remove', fileCntroller.deleteDirectory);
+
 export default router;

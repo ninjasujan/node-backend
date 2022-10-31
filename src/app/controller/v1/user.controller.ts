@@ -3,6 +3,7 @@ import { validationResult } from 'express-validator';
 import ValidatioError from 'app/exceptions/ValidationError';
 import UserModel from 'app/models/user.model';
 import APIError from 'app/exceptions/APIError';
+import TransportModel from 'app/models/transport.model';
 
 class User {
     public getUserInfo = async (
@@ -11,7 +12,6 @@ class User {
         next: NextFunction,
     ) => {
         try {
-            console.log('[Auth status]', request.isAuthenticated());
             const errors = validationResult(request);
             if (!errors.isEmpty()) {
                 throw new ValidatioError(errors);
@@ -40,7 +40,41 @@ class User {
         next: NextFunction,
     ) => {
         try {
-            const { cityId } = request.params;
+            const errors = validationResult(request);
+            if (!errors.isEmpty()) {
+                throw new ValidatioError(errors);
+            }
+
+            const { cityId, modeOfTransport } = request.params;
+
+            /** Here Aggregation query with lookup stage used
+             * Same thing can also be achivd with pouplate() method of mongoose
+             */
+            const transportDetails = await TransportModel.aggregate([
+                {
+                    $match: {
+                        cityId,
+                        modeOfTransport,
+                    },
+                },
+                {
+                    $lookup: {
+                        from: 'City',
+                        localField: 'cityId',
+                        foreignField: '_id',
+                        as: 'city',
+                    },
+                },
+            ]);
+
+            response.status(200).json({
+                status: 'success',
+                statusCode: 200,
+                message: 'Transport Mode details',
+                data: {
+                    transportDetails,
+                },
+            });
         } catch (error) {
             next(error);
         }

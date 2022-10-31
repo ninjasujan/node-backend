@@ -8,6 +8,9 @@ const router: Router = express.Router();
 /** Route - Handles Google OAuth 2 Login */
 router.get('/', authMiddleware.authenticateRequest, userController.getUserInfo);
 
-router.get('/city-transport');
+router.get(
+    '/city-transport/:cityId/:modeOfTransport',
+    userController.getCityTransportInfo,
+);
 
 export default router;
