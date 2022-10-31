@@ -9,7 +9,7 @@ class User {
         return user;
     };
 
-    public createNewUser = async (payload: IUser) => {
+    public createNewUser = async (payload: any) => {
         return await new UserModel({ ...payload }).save();
     };
 }

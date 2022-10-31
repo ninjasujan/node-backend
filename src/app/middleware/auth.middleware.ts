@@ -11,12 +11,12 @@ class Auth {
         try {
             const authToken =
                 request.headers['authorization']?.split(' ')[1] || '';
-            console.log('[Token]', authToken, request.isAuthenticated());
+
             if (!authToken) {
                 throw new AuthorizationError('Access token not found', 401);
             }
             const payload: any = authService.verifyJWTToken(authToken);
-            if (payload && request.isAuthenticated()) {
+            if (payload || request.isAuthenticated()) {
                 request.user = payload;
                 return next();
             }

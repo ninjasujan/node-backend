@@ -29,7 +29,7 @@ export interface IUser {
 
 interface IUserMethods {
     hashPassword(password: string): void;
-    checkPassword(): boolean;
+    checkPassword(password: string): boolean;
 }
 
 type IUserModel = Model<IUser, {}, IUserMethods>;

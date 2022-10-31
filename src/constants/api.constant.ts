@@ -1,4 +1,3 @@
-export const PUBLIC_API = [
-    '/api/v1/auth/google-login',
-    '/api/v1/auth/callback',
-];
+export const SUCCESS_REDIRECT = 'http://localhost:3000/home';
+
+export const FAILURE_REDIRECT = 'http://localhost:3000/error';

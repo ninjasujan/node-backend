@@ -10,6 +10,7 @@ router.get('/', authMiddleware.authenticateRequest, userController.getUserInfo);
 
 router.get(
     '/city-transport/:cityId/:modeOfTransport',
+    authMiddleware.authenticateRequest,
     userController.getCityTransportInfo,
 );
 
