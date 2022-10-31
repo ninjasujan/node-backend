@@ -2,6 +2,7 @@ import { Request } from 'express';
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth2';
 import passportJWT, { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
+import AuthorizationError from 'app/exceptions/AuthorizationError';
 import Locals from '@configs/Locals';
 import userService from 'app/service/user.service';
 
@@ -37,7 +38,6 @@ class Passport {
                         }
                         return done(null, user);
                     } catch (error) {
-                        console.log('[Google Auth Error]', error);
                         return done(error, false);
                     }
                 },
@@ -55,15 +55,20 @@ class Passport {
                     try {
                         done(null, payload);
                     } catch (error) {
-                        console.log('error', error);
-                        done(error, false);
+                        done(
+                            new AuthorizationError(
+                                'Not authorized to access service',
+                                403,
+                            ),
+                            false,
+                        );
                     }
                 },
             ),
         );
 
         passport.serializeUser(async (user: any, done: Function) => {
-            done(null, user._id);
+            done(null, user);
         });
 
         passport.deserializeUser(async (user: any, done: Function) => {

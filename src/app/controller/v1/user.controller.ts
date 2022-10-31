@@ -33,6 +33,18 @@ class User {
             next(error);
         }
     };
+
+    public getCityTransportInfo = async (
+        request: Request,
+        response: Response,
+        next: NextFunction,
+    ) => {
+        try {
+            const { cityId } = request.params;
+        } catch (error) {
+            next(error);
+        }
+    };
 }
 
 export default new User();

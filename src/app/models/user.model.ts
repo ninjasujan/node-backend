@@ -23,6 +23,8 @@ export interface IUser {
     location?: [ILocation];
     gender?: GenderType;
     loginMethod?: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 interface IUserMethods {
@@ -32,42 +34,46 @@ interface IUserMethods {
 
 type IUserModel = Model<IUser, {}, IUserMethods>;
 
-export const UserSchema = new mongoose.Schema<IUser, IUserModel, IUserMethods>({
-    name: {
-        type: String,
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    passwordHash: {
-        type: String,
-    },
-    passwordSalt: {
-        type: String,
-    },
-    platform: {
-        type: String,
-        enum: Object.values(Platform),
-        default: Platform.ANDROID,
-    },
-    location: {
-        type: {
+export const UserSchema = new mongoose.Schema<IUser, IUserModel, IUserMethods>(
+    {
+        name: {
             type: String,
-            enum: ['point'],
         },
-        coordinates: [Number],
+        email: {
+            type: String,
+            required: true,
+            unique: true,
+            index: true,
+        },
+        passwordHash: {
+            type: String,
+        },
+        passwordSalt: {
+            type: String,
+        },
+        platform: {
+            type: String,
+            enum: Object.values(Platform),
+            default: Platform.ANDROID,
+        },
+        location: {
+            type: {
+                type: String,
+                enum: ['point'],
+            },
+            coordinates: [Number],
+        },
+        gender: {
+            type: String,
+            enum: Object.values(Gender),
+        },
+        loginMethod: {
+            type: String,
+            enum: Object.values(LoginMethod),
+        },
     },
-    gender: {
-        type: String,
-        enum: Object.values(Gender),
-    },
-    loginMethod: {
-        type: String,
-        enum: Object.values(LoginMethod),
-    },
-});
+    { timestamps: true },
+);
 
 /** Mongoose Instance method helps to hash password */
 UserSchema.method('hashPassword', function hashPassword(password: string) {

@@ -2,6 +2,6 @@
     "verbose": true,
     "watch": ["src", ".env"],
     "ext": "js,ts,json",
-    "ignore": [""],
+    "ignore": ["src/tmp"],
     "exec": "ts-node -r tsconfig-paths/register --transpile-only src/index.ts"
 }
