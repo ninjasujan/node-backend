@@ -2,7 +2,7 @@
 
 ### How to setup project.
 
-1. Clone the repo with `main` branch
+1. Clone the repo with `master` branch
 2. install all dependencies with `npm i`
 3. Give execute permission to `.husky/pre-commit` file to enable pre-commit
    linting.
